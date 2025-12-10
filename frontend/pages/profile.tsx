@@ -8,7 +8,8 @@ const { Title } = Typography;
 export default function Profile() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [initial, setInitial] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -21,7 +22,8 @@ export default function Profile() {
         const res = await axios.get((process.env.NEXT_PUBLIC_API_URL || '') + '/api/auth/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setInitial(res.data);
+        setUser(res.data);
+        form.setFieldsValue(res.data);
       } catch (err) {
         localStorage.removeItem('token');
         router.replace('/login');
@@ -29,7 +31,7 @@ export default function Profile() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [router]);
 
   const onFinish = async (values: any) => {
     try {
@@ -38,7 +40,8 @@ export default function Profile() {
         headers: { Authorization: `Bearer ${token}` }
       });
       message.success('Profile updated');
-      setInitial(res.data);
+      setUser(res.data);
+      form.setFieldsValue(res.data);
     } catch (err: any) {
       message.error(err?.response?.data?.message || 'Update failed');
     }
@@ -58,7 +61,7 @@ export default function Profile() {
           <Title level={4}>My Profile</Title>
           <Button danger onClick={logout}>Logout</Button>
         </div>
-        <Form layout="vertical" onFinish={onFinish} initialValues={initial}>
+        <Form layout="vertical" form={form} onFinish={onFinish} initialValues={user || {}}>
           <Form.Item label="Name" name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>

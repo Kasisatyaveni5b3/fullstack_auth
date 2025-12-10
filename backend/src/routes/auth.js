@@ -6,7 +6,6 @@ const db = require('../models');
 const User = db.User;
 const auth = require('../middleware/auth');
 
-// Register
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -22,7 +21,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -39,13 +37,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get current user
 router.get('/me', auth, async (req, res) => {
   const u = req.user;
   return res.json({ id: u.id, name: u.name, email: u.email });
 });
 
-// Update current user
 router.put('/me', auth, async (req, res) => {
   try {
     const u = req.user;
